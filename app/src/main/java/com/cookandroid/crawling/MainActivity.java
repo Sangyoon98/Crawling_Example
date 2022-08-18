@@ -27,19 +27,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         tv_textView = findViewById(R.id.tv_textView);
-
+        //AsyncTask 이용한 방법
         //new WeatherAsyncTask(tv_textView).execute();
-        BackgroundTask(URLs);
 
+        //RxJava의 BackgroundTask 이용한 방법
+        BackgroundTask(URLs);
     }
 
-    Disposable backgroundtask;
+    //RxJava의 BackgroundTask 이용한 방법
+    Disposable backgroundTask;
     void BackgroundTask(String URLs) {
         //onPreExecute
 
-        backgroundtask = Observable.fromCallable(() -> {
+        backgroundTask = Observable.fromCallable(() -> {
             //doInBackground
-
             String result = "";
 
             try {
@@ -59,16 +60,15 @@ public class MainActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe((result) -> {
                     //onPostExecute
-
                     tv_textView.setText(result);
-
-                    backgroundtask.dispose();
+                    backgroundTask.dispose();
                 });
     }
 }
 
 
 /*
+//AsyncTask 이용한 방법
 class WeatherAsyncTask extends AsyncTask<String, Void, String> {
     TextView textView;
 
@@ -81,7 +81,7 @@ class WeatherAsyncTask extends AsyncTask<String, Void, String> {
         String result = "";
 
         try {
-            Document document = Jsoup.connect("https://lostark.game.onstove.com/Profile/Character/%EB%A9%B4%ED%83%B1%EC%9D%B4").get();
+            Document document = Jsoup.connect(URLs).get();
             Elements elements = document.select("span[class=profile-character-info__name]");
 
             for (Element element : elements) {
